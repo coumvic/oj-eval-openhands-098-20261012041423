@@ -10,8 +10,8 @@ struct TreeNode {
     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
 };
 
-// Build BST from level order array
-TreeNode* buildBSTFromLevelOrder(const vector<int>& values) {
+// Build complete binary tree from level order array
+TreeNode* buildCompleteBinaryTree(const vector<int>& values) {
     if (values.empty()) return nullptr;
     
     TreeNode* root = new TreeNode(values[0]);
@@ -23,27 +23,17 @@ TreeNode* buildBSTFromLevelOrder(const vector<int>& values) {
         TreeNode* current = q.front();
         q.pop();
         
-        // Insert next value into BST
+        // Left child
         if (i < values.size()) {
-            TreeNode* newNode = new TreeNode(values[i]);
-            // Find correct position in BST
-            TreeNode* temp = current;
-            while (true) {
-                if (values[i] < temp->val) {
-                    if (temp->left == nullptr) {
-                        temp->left = newNode;
-                        break;
-                    }
-                    temp = temp->left;
-                } else {
-                    if (temp->right == nullptr) {
-                        temp->right = newNode;
-                        break;
-                    }
-                    temp = temp->right;
-                }
-            }
-            q.push(newNode);
+            current->left = new TreeNode(values[i]);
+            q.push(current->left);
+            i++;
+        }
+        
+        // Right child
+        if (i < values.size()) {
+            current->right = new TreeNode(values[i]);
+            q.push(current->right);
             i++;
         }
     }
@@ -79,34 +69,11 @@ int findKthLargest(TreeNode* root, int k) {
     return kthLargest;
 }
 
-// Alternative approach: build BST by inserting values one by one
-TreeNode* insertIntoBST(TreeNode* root, int val) {
-    if (root == nullptr) {
-        return new TreeNode(val);
-    }
-    
-    if (val < root->val) {
-        root->left = insertIntoBST(root->left, val);
-    } else {
-        root->right = insertIntoBST(root->right, val);
-    }
-    
-    return root;
-}
-
-TreeNode* buildBST(const vector<int>& values) {
-    TreeNode* root = nullptr;
-    for (int val : values) {
-        root = insertIntoBST(root, val);
-    }
-    return root;
-}
-
 int main() {
     vector<int> values(7);
     int cnt;
     
-    // Read 7 BST node values
+    // Read 7 BST node values in level order
     for (int i = 0; i < 7; i++) {
         cin >> values[i];
     }
@@ -114,8 +81,8 @@ int main() {
     // Read the rank
     cin >> cnt;
     
-    // Build BST
-    TreeNode* root = buildBST(values);
+    // Build complete binary tree (which should be a BST according to problem)
+    TreeNode* root = buildCompleteBinaryTree(values);
     
     // Find k-th largest
     int result = findKthLargest(root, cnt);
