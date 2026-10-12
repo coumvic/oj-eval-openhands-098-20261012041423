@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-#include <queue>
 using namespace std;
 
 struct TreeNode {
@@ -10,34 +9,27 @@ struct TreeNode {
     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
 };
 
-// Build complete binary tree from level order array
-TreeNode* buildCompleteBinaryTree(const vector<int>& values) {
-    if (values.empty()) return nullptr;
-    
-    TreeNode* root = new TreeNode(values[0]);
-    queue<TreeNode*> q;
-    q.push(root);
-    
-    int i = 1;
-    while (!q.empty() && i < values.size()) {
-        TreeNode* current = q.front();
-        q.pop();
-        
-        // Left child
-        if (i < values.size()) {
-            current->left = new TreeNode(values[i]);
-            q.push(current->left);
-            i++;
-        }
-        
-        // Right child
-        if (i < values.size()) {
-            current->right = new TreeNode(values[i]);
-            q.push(current->right);
-            i++;
-        }
+// Insert a value into BST
+TreeNode* insertIntoBST(TreeNode* root, int val) {
+    if (root == nullptr) {
+        return new TreeNode(val);
     }
     
+    if (val < root->val) {
+        root->left = insertIntoBST(root->left, val);
+    } else {
+        root->right = insertIntoBST(root->right, val);
+    }
+    
+    return root;
+}
+
+// Build BST by inserting values in the given order
+TreeNode* buildBST(const vector<int>& values) {
+    TreeNode* root = nullptr;
+    for (int val : values) {
+        root = insertIntoBST(root, val);
+    }
     return root;
 }
 
@@ -73,7 +65,7 @@ int main() {
     vector<int> values(7);
     int cnt;
     
-    // Read 7 BST node values in level order
+    // Read 7 BST node values
     for (int i = 0; i < 7; i++) {
         cin >> values[i];
     }
@@ -81,8 +73,8 @@ int main() {
     // Read the rank
     cin >> cnt;
     
-    // Build complete binary tree (which should be a BST according to problem)
-    TreeNode* root = buildCompleteBinaryTree(values);
+    // Build BST by inserting values in order
+    TreeNode* root = buildBST(values);
     
     // Find k-th largest
     int result = findKthLargest(root, cnt);
